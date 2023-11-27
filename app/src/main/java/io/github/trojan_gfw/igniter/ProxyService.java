@@ -1,5 +1,6 @@
 package io.github.trojan_gfw.igniter;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -182,7 +183,7 @@ public class ProxyService extends VpnService implements TestConnection.OnResultL
         LogHelper.i(TAG, "onCreate");
         IntentFilter filter = new IntentFilter();
         filter.addAction(getString(R.string.stop_service));
-        registerReceiver(mStopBroadcastReceiver, filter);
+        registerReceiver(mStopBroadcastReceiver, filter, RECEIVER_NOT_EXPORTED);
     }
 
     @Override
@@ -273,7 +274,7 @@ public class ProxyService extends VpnService implements TestConnection.OnResultL
     private void startForegroundNotification(String channelId) {
         Intent openMainActivityIntent = new Intent(this, MainActivity.class);
         openMainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingOpenMainActivityIntent = PendingIntent.getActivity(this, 0, openMainActivityIntent, 0);
+        PendingIntent pendingOpenMainActivityIntent = PendingIntent.getActivity(this, 0, openMainActivityIntent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.drawable.ic_tile)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
@@ -292,7 +293,7 @@ public class ProxyService extends VpnService implements TestConnection.OnResultL
         // it's required to create a notification channel before startForeground on SDK >= Android O
         createNotificationChannel(channelId);
         LogHelper.i(TAG, "start foreground notification");
-        startForeground(IGNITER_STATUS_NOTIFY_MSG_ID, builder.build());
+        startForeground(IGNITER_STATUS_NOTIFY_MSG_ID, builder.build(), FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
     }
 
     private boolean readClashPreference() {
@@ -513,7 +514,7 @@ public class ProxyService extends VpnService implements TestConnection.OnResultL
 
         Intent openMainActivityIntent = new Intent(this, MainActivity.class);
         openMainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingOpenMainActivityIntent = PendingIntent.getActivity(this, 0, openMainActivityIntent, 0);
+        PendingIntent pendingOpenMainActivityIntent = PendingIntent.getActivity(this, 0, openMainActivityIntent, PendingIntent.FLAG_IMMUTABLE);
         String igniterRunningStatusStr = getString(R.string.notification_listen_port, String.valueOf(tun2socksPort));
         final String channelId = getString(R.string.notification_channel_id);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
@@ -527,7 +528,7 @@ public class ProxyService extends VpnService implements TestConnection.OnResultL
                 .setContentIntent(pendingOpenMainActivityIntent)
                 .setAutoCancel(false)
                 .setOngoing(true);
-        startForeground(IGNITER_STATUS_NOTIFY_MSG_ID, builder.build());
+        startForeground(IGNITER_STATUS_NOTIFY_MSG_ID, builder.build(), FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
         return START_STICKY;
     }
 

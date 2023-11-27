@@ -15,6 +15,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+    android:minSdkVersion="34" />
 
     <application
         android:name=".IgniterApplication"
@@ -70,6 +72,7 @@
             android:name=".ProxyService"
             android:directBootAware="true"
             android:exported="false"
+            android:foregroundServiceType="mediaPlayback"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:process=":proxy"
             tools:targetApi="N">
